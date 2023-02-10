@@ -1,6 +1,6 @@
 // Using D3 Library to import data from URL
 
-let selectedValue = undefined;
+let selectedId = undefined;
 
 const jsonData = d3.json('./samples.json');
 
@@ -9,13 +9,10 @@ function init() {
         let sampleNames = data.names.map(function(element) {
             return element
         });
-        let metaNames = data.metadata.map(function(element) {
-            return element
-        });
+        optionChanged(sampleNames[0])
         dropdownMenu(sampleNames);
-        optionChanged(metaNames);
         });
-    };
+};
 
 function dropdownMenu(sampleNames) {
     let dropdown = d3.select('#selDataset').attr('name', 'name-list')
@@ -33,36 +30,30 @@ function dropdownMenu(sampleNames) {
 
 };
 
-
-
 function optionChanged(value) {
-    selectedValue = value
+    selectedId = value
     barchart()
     bubblechart()
-    demographics(metaNames)
+    demographics()
 };
 
-
-function demographics(metaNames) {
+function demographics() {
     jsonData.then(data => {
-
-        const metadata = data.metadata.filter(x => x.id === metaNames)[0]
-        // .filter(x => x.id === selectedValue)[0]
-        console.log(metadata)
+        const metadata = data.metadata.filter(x => {
+            return x.id === Number(selectedId)
+        })[0]
         let block = d3.select('#sample-metadata')
         block.html('');
         Object.entries(metadata).forEach(([key, value]) => {
             block.append('h6').text(`${key.toUpperCase()}:${value}`)
         })
     })
-    
 }
 
-console.log(jsonData)
 
 function barchart() {
     jsonData.then(data => {
-        const bardata = data.samples.filter(x => x.id === selectedValue)[0]
+        const bardata = data.samples.filter(x => x.id === selectedId)[0]
         let yvar = bardata.otu_ids.slice(0,10)
         let yitem = yvar.map(item => 'OTU ' + item)
         let sorted = yitem.sort(function sortFunction(a, b) {
@@ -90,7 +81,7 @@ function barchart() {
 
 function bubblechart() {
     jsonData.then(data => {
-        const bubbledata = data.samples.filter(x => x.id === selectedValue)[0]
+        const bubbledata = data.samples.filter(x => x.id === selectedId)[0]
         const bubbleconfig = [{
             x: bubbledata.otu_ids,
             y: bubbledata.sample_values,
