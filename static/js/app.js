@@ -9,7 +9,11 @@ function init() {
         let sampleNames = data.names.map(function(element) {
             return element
         });
+        let metaNames = data.metadata.map(function(element) {
+            return element
+        });
         dropdownMenu(sampleNames);
+        optionChanged(metaNames);
         });
     };
 
@@ -35,31 +39,21 @@ function optionChanged(value) {
     selectedValue = value
     barchart()
     bubblechart()
-    demographics(selectedValue)
+    demographics(metaNames)
 };
 
 
-function demographics(selectedValue) {
-    d3.json('./samples.json').then(function(data) {
-        let metadata = data.metadata[0]
+function demographics(metaNames) {
+    jsonData.then(data => {
+
+        const metadata = data.metadata.filter(x => x.id === metaNames)[0]
+        // .filter(x => x.id === selectedValue)[0]
         console.log(metadata)
-
-  
-
-        function schema1(w){
-            d3.json(url).then((data)=>{
-                var meta=data.metadata;
-                var array=meta.filter(element=>element.id==w);
-                var result=array[0];
-                //retrive the sample metadata html code block
-                var display=d3.select('#sample-metadata');
-                //reset
-                display.html('');
-                //apend for key value pairs
-                Object.entries(result).forEach(([key,value])=> {
-                    display.append('h6').text(`${key.toUpperCase()}:${value}`);
-                });
-    
+        let block = d3.select('#sample-metadata')
+        block.html('');
+        Object.entries(metadata).forEach(([key, value]) => {
+            block.append('h6').text(`${key.toUpperCase()}:${value}`)
+        })
     })
     
 }
