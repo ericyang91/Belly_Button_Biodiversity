@@ -1,8 +1,10 @@
-// Using D3 Library to import data from URL
+// Importing the Data
 
 let selectedId = undefined;
 
 const jsonData = d3.json('./samples.json');
+
+// Creating a default function
 
 function init() {
     jsonData.then(function(data) {
@@ -13,6 +15,8 @@ function init() {
         dropdownMenu(sampleNames);
         });
 };
+
+// Creating drop-down
 
 function dropdownMenu(sampleNames) {
     let dropdown = d3.select('#selDataset').attr('name', 'name-list')
@@ -27,8 +31,9 @@ function dropdownMenu(sampleNames) {
   .attr("value", function(d) {
     return d;
   });
-
 };
+
+// Defining optionChanged function that bridges all the other functions
 
 function optionChanged(value) {
     selectedId = value
@@ -36,6 +41,8 @@ function optionChanged(value) {
     bubblechart()
     demographics()
 };
+
+// Creating a function that populates the demographics data
 
 function demographics() {
     jsonData.then(data => {
@@ -48,8 +55,9 @@ function demographics() {
             block.append('h6').text(`${key.toUpperCase()}:${value}`)
         })
     })
-}
+};
 
+// Creating Bar Chart
 
 function barchart() {
     jsonData.then(data => {
@@ -72,12 +80,11 @@ function barchart() {
             xaxis: {title: 'Number of OTU'},
             yaxis: {title: 'OTU ID'}
         };
-    
         Plotly.newPlot('bar', config, layout)
     });
-
 };
 
+// Creating Bubble Chart
 
 function bubblechart() {
     jsonData.then(data => {
@@ -100,9 +107,5 @@ function bubblechart() {
     Plotly.newPlot('bubble', bubbleconfig, bubblelayout)
     })
 }
-
-
-
-
 
 init()
